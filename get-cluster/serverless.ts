@@ -1,6 +1,6 @@
 import type { AWS } from '@serverless/typescript';
 
-import hello from '@functions/hello';
+import getCluster from '@functions/getCluster';
 
 const serverlessConfiguration: AWS = {
   service: 'get-cluster',
@@ -25,7 +25,7 @@ const serverlessConfiguration: AWS = {
     lambdaHashingVersion: '20201221',
   },
   // import the function via paths
-  functions: { hello },
+  functions: { getCluster },
 };
 
 module.exports = serverlessConfiguration;
