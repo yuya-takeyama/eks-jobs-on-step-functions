@@ -7,7 +7,15 @@ import {
   DescribeClusterCommand,
 } from '@aws-sdk/client-eks';
 
-export const main: Handler = async event => {
+type EventFromStepFunction = {
+  clusterTags: ClusterTags;
+};
+
+export const main: Handler = async (event: any) => {
+  if (!isValidEvent(event)) {
+    throw new Error(`Event format is invalid: ${JSON.stringify(event)}`);
+  }
+
   const client = new EKSClient({ region: process.env.AWS_REGION });
   const paginator = paginateListClusters({ client, pageSize: 25 }, {});
 
@@ -22,6 +30,16 @@ export const main: Handler = async event => {
       }
     }
   }
+};
+
+const isValidEvent = (event: any): event is EventFromStepFunction => {
+  return (
+    event &&
+    typeof event === 'object' &&
+    event.clusterTags &&
+    typeof event.clusterTags === 'object' &&
+    Object.values(event.clusterTags).every(tag => typeof tag === 'string')
+  );
 };
 
 type ClusterTags = { [key: string]: string };

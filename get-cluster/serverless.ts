@@ -1,6 +1,7 @@
 import type { AWS } from '@serverless/typescript';
 
 import getCluster from '@functions/getCluster';
+import getTimestamp from '@functions/getTimestamp';
 
 const serverlessConfiguration: AWS = {
   service: 'get-cluster',
@@ -16,17 +17,21 @@ const serverlessConfiguration: AWS = {
     name: 'aws',
     runtime: 'nodejs14.x',
     region: 'ap-northeast-1',
-    apiGateway: {
-      minimumCompressionSize: 1024,
-      shouldStartNameWithService: true,
-    },
-    environment: {
-      AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+    iam: {
+      role: {
+        statements: [
+          {
+            Effect: 'Allow',
+            Action: ['eks:ListClusters', 'eks:DescribeCluster'],
+            Resource: '*',
+          },
+        ],
+      },
     },
     lambdaHashingVersion: '20201221',
   },
   // import the function via paths
-  functions: { getCluster },
+  functions: { getCluster, getTimestamp },
 };
 
 module.exports = serverlessConfiguration;
